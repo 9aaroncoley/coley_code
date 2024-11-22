@@ -51,59 +51,47 @@ for reference, alternate in zip(reference_strands, alternate_strands): # now we 
     t2 = alternate.translate(flipper)[::-1]
     flipped_sequences.append((t1, t2))
 
-
-
-
-
-pattern = r'/.*?\)'
-cleaned_sequences = [re.sub(pattern, '', seq) for seq in original_sequences]
-
-'''for s,p in zip(spacer_sequences,pams):
-    mixed = spacer_sequences + pams
-    spacer_pams.append(mixed) # spacer_pams has spacers + pams'''
-
-for sequence, sign in zip(cleaned_sequences, flips): # pairs each sequence with its sign
-    if (sign == "-"): # need to make the strand antiparallel and complementary 
-        adjusted_sequences.append(sequence.translate(flipper)[::-1])
-    else: # +, so use normal sequence
-        adjusted_sequences.append(sequence) # use this now
-
-# adjusted sequences now has all the necessary flips
-# + is reverse for extensions, - is normal for extension
-
-
-
-for flip, clean, sequence, peg, spacer in zip(flips, cleaned_sequences, adjusted_sequences, peg_extensions, spacer_pams): # need to find where the substring is
-    if (flip == '+'): #use reverse compliment
-        index = sequence.find(peg)
-    else: index = clean.find(peg)
-    index2 = sequence.find(spacer)
-    #print(index)
-
+###### NEED TO TAKE INTO ACCOUNT THE FLIPS
+count = 0
+for reference, alternate, spam, peg, flip in zip(reference_strands, alternate_strands, spacer_pams, peg_extensions, flips): # need to find where the substring is
     lo = []
-
-    if (index != - 1): # BINGO -- have the initial index of the spot
-        lo.append(index)
-        lo.append(index + len(sequence))
-    else: # not in the sequence
-        lo.append("X")
-        lo.append("X")
-    if (index2 != -1): # BINGO but for spacerPAM
-        lo.append(index2)
-        lo.append(index2 + len(spacer))
+    # the spam is reverse compliment on -, the peg is reverse compliment on +
+    if (flip == '+'): 
+        index1 = reference.find(spam)
+        index2 = flipped_sequences[count][1].find(peg)
+    elif (flip == '-'):
+        index1 = flipped_sequences[count][0].find(spam)
+        index2 = alternate.find(peg)
     else:
+        raise ("YOUR DATA HAS FORMATTING ERRORS")
+    
+
+    if (index1 != -1): # BINGO -- we have a match for the reference + spam
+        lo.append(index1)
+        lo.append(index1 + len(spam))
+    else: # NO MATCH -- no match for reference + spam
         lo.append("X")
         lo.append("X")
-    locations.append(lo)
+
+    if (index2 != -1): # BINGO -- we have a match for the alternate + peg
+        lo.append(index2)
+        lo.append(index2 + len(peg))
+    else: # NO MATCH -- no match for alternate + peg
+        lo.append("X")
+        lo.append("X")
+    locations.append(lo) # add the loactions to the location list
+    count = count + 1
 
 
 locations_df = pd.DataFrame(locations, columns = ['Peg_Start', 'Peg_End', 'SPAM_Start', 'SPAM_End'])
 output_file_path = r"C:\Users\that9\OneDrive\Documents\output_locations.csv"
 locations_df.to_csv(output_file_path, index=False)
-#print(locations)
+print(locations)
 
 
 
+#SPAM IS REVERSE COMP ON -
+# PEG IS REVERSE COMP ON +
 
 
 # spam matches to the reference (keep the left and delete the right)
