@@ -61,9 +61,4 @@ for flip, clean, sequence, peg, spacer in zip(flips, cleaned_sequences, adjusted
         lo.append("X")
     locations.append(lo)
 
-
-locations_df = pd.DataFrame(locations, columns = ['Peg_Start', 'Peg_End', 'SPAM_Start', 'SPAM_End'])
-output_file_path = r"C:\Users\that9\OneDrive\Documents\output_locations.csv"
-locations_df.to_csv(output_file_path, index=False)
-print(locations)
 # bruh burh
