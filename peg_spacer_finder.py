@@ -19,6 +19,7 @@ peg_extensions = data["pegRNA_extension"]
 locations = [] # add tuples of locations
 # need to flip some of the strands
 
+# NEED TO make cleaned_sequences contain reference_sequence, alternate_sequence
 pattern = r'/.*?\)'
 cleaned_sequences = [re.sub(pattern, '', seq) for seq in original_sequences]
 spacer_sequences = data["Spacer_sequence"]
@@ -37,6 +38,8 @@ for sequence, sign in zip(cleaned_sequences, flips): # pairs each sequence with 
 
 # adjusted sequences now has all the necessary flips
 # + is reverse for extensions, - is normal for extension
+
+
 
 for flip, clean, sequence, peg, spacer in zip(flips, cleaned_sequences, adjusted_sequences, peg_extensions, spacer_pams): # need to find where the substring is
     if (flip == '+'): #use reverse compliment
@@ -61,4 +64,20 @@ for flip, clean, sequence, peg, spacer in zip(flips, cleaned_sequences, adjusted
         lo.append("X")
     locations.append(lo)
 
-# bruh burh
+
+locations_df = pd.DataFrame(locations, columns = ['Peg_Start', 'Peg_End', 'SPAM_Start', 'SPAM_End'])
+output_file_path = r"C:\Users\that9\OneDrive\Documents\output_locations.csv"
+locations_df.to_csv(output_file_path, index=False)
+print(locations)
+
+
+
+
+
+# spam matches to the reference (keep the left and delete the right)
+# peg extstension matches to the alternate sequence (keep the right and delete the left)
+    # with peg extensions, since it matches the alternate, the final coordinate you just add on the difference between the original and the edit (og length - edit length)
+
+
+''' need to create an array of both the reference and the alternate sequences, that way I can just easily compare 
+    spam --> reference and peg extension --> alternate'''
