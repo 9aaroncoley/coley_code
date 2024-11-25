@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 import re
+import random
 
 # Using a raw string to ensure backslashes are interpreted correctly
 data = pd.read_csv(r"PrimeDesign_Pooled_20241031_07.46.21.51.csv")
-
+random.seed(18) # THIS IS THE SEED
 # data has all that data 
 # for now let's just try to find peg extensions in the original sequence
 
@@ -127,9 +128,7 @@ for reference, alternate, spam, peg, flip, difference in zip(reference_strands, 
     count = count + 1
 
 
-locations_df = pd.DataFrame(locations, columns = ['SPAM_Start', 'SPAM_End', 'Peg_Start', 'Peg_End', 'Earliest Start', 'Latest End',"S+PAM", "Peg Extension", "Pseudo Target"])
-output_file_path = "output_locations.csv"
-locations_df.to_csv(output_file_path, index=False)
+
 #print(locations)
 
 
@@ -159,4 +158,32 @@ u6_stub = "TGTGGAAAGGACGAAACACCG"
 FE_hairpin = "GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGC"
 tev = "CGCGGTTCTATCTAGTTACGCGTTAAACCAACTAGAA"
 seq_stub = "AGATCGGAAGAGCACACGTCT"
+oligos = []
+used_codes = []
+barMaker = str.maketrans("1234", "ACGT")
+index = 0
+# pseudo @ locations[count][8]
+for count in locations:
+    pseudo = count[8]
+    # need to generate barcode
+    while True:
+        random_number = str(int(''.join(str(random.randint(1,4)) for num in range(6))))
+        if (random_number not in used_codes): #FRESH CODE
+            used_codes.append(random_number)  # add to used list
+            break
+    barcode = random_number.translate(barMaker)
+    print(barcode)
+
+    oligos.append(u6_stub + spacer_sequences[index] + FE_hairpin + peg_extensions[index] + tev + pseudo + barcode + seq_stub)
+    index = index + 1
+
+
+
+
+locations_df = pd.DataFrame(locations, columns = ['SPAM_Start', 'SPAM_End', 'Peg_Start', 'Peg_End', 'Earliest Start', 'Latest End',"S+PAM", "Peg Extension", "Pseudo Target"])
+locations_df['Oligos'] = oligos
+output_file_path = "output_locations.csv"
+locations_df.to_csv(output_file_path, index=False)
+
+
 
