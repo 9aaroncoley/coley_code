@@ -148,3 +148,15 @@ locations_df.to_csv(output_file_path, index=False)
 
 ''' need to create an array of both the reference and the alternate sequences, that way I can just easily compare 
     spam --> reference and peg extension --> alternate'''
+
+# LFG the pseudo targets are properly created 
+# now need to make the final oligo
+
+''' final oligo should be u6_stub + protospacer (no PAM) + FE_hairpin + extension + 
+tevO-Q1_motif_and_terminator + Reporter (pseudo target) + 6bp barcode + R2seq_stub'''
+
+u6_stub = "TGTGGAAAGGACGAAACACCG"
+FE_hairpin = "GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGC"
+tev = "CGCGGTTCTATCTAGTTACGCGTTAAACCAACTAGAA"
+seq_stub = "AGATCGGAAGAGCACACGTCT"
+
