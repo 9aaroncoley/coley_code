@@ -85,7 +85,8 @@ for reference, alternate, spam, peg, flip, difference in zip(reference_strands, 
     # the spam is reverse compliment on -, the peg is reverse compliment on +
     if (flip == '+'): 
         index1 = reference.find(spam)
-        index2 = flipped_sequences[count][1].find(peg)
+        #index2 = flipped_sequences[count][1].find(peg)
+        index2 = (len(flipped_sequences[count][1]) - flipped_sequences[count][1].find(peg) - len(peg))
         if (count == 0):
             print("REFERENCE " + reference)
             print("SPAM " + spam)
@@ -122,7 +123,7 @@ for reference, alternate, spam, peg, flip, difference in zip(reference_strands, 
     biggest = max(lo)
     lo.append(smallest)
     lo.append(biggest)
-    extracted = reference[smallest: (biggest + 1)]
+    extracted = reference[smallest: (biggest)]
     lo.append(spam)
     lo.append(peg)
     lo.append(extracted)
