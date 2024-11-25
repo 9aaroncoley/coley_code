@@ -87,15 +87,9 @@ for reference, alternate, spam, peg, flip, difference in zip(reference_strands, 
         index1 = reference.find(spam)
         #index2 = flipped_sequences[count][1].find(peg)
         index2 = (len(flipped_sequences[count][1]) - flipped_sequences[count][1].find(peg) - len(peg))
-        if (count == 0):
-            print("REFERENCE " + reference)
-            print("SPAM " + spam)
-            print("FLIPPED " + flipped_sequences[0][1])
-            print("PEG " + peg)
-            print("INDEX1 " + str(index1))
-            print("INDEX2 " + str(index2))
+        
     elif (flip == '-'):
-        index1 = flipped_sequences[count][0].find(spam)
+        index1 = (len(flipped_sequences[count][0]) - flipped_sequences[count][0].find(spam) - len(spam))
         index2 = alternate.find(peg)
     else:
         raise ("YOUR DATA HAS FORMATTING ERRORS")
@@ -124,6 +118,8 @@ for reference, alternate, spam, peg, flip, difference in zip(reference_strands, 
     lo.append(smallest)
     lo.append(biggest)
     extracted = reference[smallest: (biggest)]
+    if (flip == '-'):
+        extracted = extracted.translate(flipper)[::-1]
     lo.append(spam)
     lo.append(peg)
     lo.append(extracted)
