@@ -4,7 +4,7 @@ import re
 import random
 
 # Using a raw string to ensure backslashes are interpreted correctly
-data = pd.read_csv(r"PrimeDesign_Pooled_20241031_07.46.21.51.csv")
+data = pd.read_csv(r"PrimeDesign_Pooled_20241031_07.46.21.51.csv") #ORIGINAL FILE DATA
 random.seed(18) # THIS IS THE SEED
 # data has all that data 
 # for now let's just try to find peg extensions in the original sequence
@@ -162,9 +162,13 @@ oligos = []
 used_codes = []
 barMaker = str.maketrans("1234", "ACGT")
 index = 0
+tf = []
+pseudos = []
+lengths = []
 # pseudo @ locations[count][8]
 for count in locations:
     pseudo = count[8]
+    pseudos.append(pseudo)
     # need to generate barcode
     while True:
         random_number = str(int(''.join(str(random.randint(1,4)) for num in range(6))))
@@ -172,17 +176,30 @@ for count in locations:
             used_codes.append(random_number)  # add to used list
             break
     barcode = random_number.translate(barMaker)
-    print(barcode)
+    
 
-    oligos.append(u6_stub + spacer_sequences[index] + FE_hairpin + peg_extensions[index] + tev + pseudo + barcode + seq_stub)
+    oligo = (u6_stub + spacer_sequences[index] + FE_hairpin + peg_extensions[index] + tev + pseudo + barcode + seq_stub)
+    oligos.append(oligo)
+    lengths.append(len(oligo))
+    if (len(oligo) > 300):
+        largeness = False
+    else:
+        largeness = True
+    tf.append(largeness)
     index = index + 1
 
 
 
-
-locations_df = pd.DataFrame(locations, columns = ['SPAM_Start', 'SPAM_End', 'Peg_Start', 'Peg_End', 'Earliest Start', 'Latest End',"S+PAM", "Peg Extension", "Pseudo Target"])
+#locations_df = pd.DataFrame(locations, columns = ['SPAM_Start', 'SPAM_End', 'Peg_Start', 'Peg_End', 'Earliest Start', 'Latest End',"S+PAM", "Peg Extension", "Pseudo Target"])
+locations_df = pd.DataFrame()
+locations_df['Target Sequence'] = original_sequences
+locations_df['Protospacer'] = spacer_sequences
+locations_df['Peg Extension'] = peg_extensions
+locations_df['Pseudo Target'] = pseudos
 locations_df['Oligos'] = oligos
-output_file_path = "output_locations.csv"
+locations_df['Length'] = lengths
+locations_df['Twist Compatibility'] = tf
+output_file_path = "output_locations.csv" #DESTINATION LOCATION
 locations_df.to_csv(output_file_path, index=False)
 
 
